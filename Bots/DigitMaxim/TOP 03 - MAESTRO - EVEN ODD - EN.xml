@@ -3,7 +3,7 @@
     <variable type="" id="kP9DxSjd-j]S+@tc?b#." islocal="false" iscloud="false">🟨 Gale Tradicional (1) ou Gale Pletsch (2)</variable>
     <variable type="" id="TI,H(+i7[c/(G4Eb?R=#" islocal="false" iscloud="false">⬜ Qual Valor da Aposta?</variable>
     <variable type="" id="p[i%k8y_Pf#|owTWNBV(" islocal="false" iscloud="false">contadorloss</variable>
-    <variable type="" id="3!04wBS#F}FXXXQ1JaP`" islocal="false" iscloud="false">⬛ Qual a sua Meta do Dia?</variable>
+    <variable type="" id="3!04wBS#F}FXXXQ1JaP`" islocal="false" iscloud="false">⬛ Qual a sua Meta do Diavariable>
     <variable type="" id="gfW5A4EjFnnJ}ZN(su!f" islocal="false" iscloud="false">contadorloss1</variable>
     <variable type="" id="{_gQ*oKSNI260$_%IiFy" islocal="false" iscloud="false">ContadorM</variable>
     <variable type="" id="e}SvfkW53S$6g7xA3z,C" islocal="false" iscloud="false">⬜Qual Valor Ao Vencer?</variable>
@@ -914,7 +914,7 @@
                                       <block type="controls_if" id="7@O@rzrM*CE;DB=NKZoe">
                                         <value name="IF0">
                                           <block type="logic_compare" id="9hT]S{ueWa%b!/8XYQo8">
-                                            <field name="OP">EQ</field>
+                                            <field namenader="OP">EQ</field>
                                             <value name="A">
                                               <block type="variables_get" id="I5=U,wy`#o,W4l`AC4K!">
                                                 <field name="VAR" id="{_gQ*oKSNI260$_%IiFy" variabletype="">ContadorM</field>
