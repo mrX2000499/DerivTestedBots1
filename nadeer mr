@@ -1,0 +1,90 @@
+import time
+import asyncio
+from deriv_api import DerivAPI
+
+# Your API Token from Deriv
+API_TOKEN = 'YOUR_API_TOKEN_HERE'
+
+# Configuration for Martingale
+INITIAL_BALANCE = 500  # Starting balance in USD
+INITIAL_BET = 1  # Initial bet amount in USD
+MAX_LOSS_LIMIT = 100  # Max loss you're willing to take
+martingale_factor = 2  # Martingale multiplier (double bet after loss)
+market = 'R_100'  # Market symbol for over/under
+duration = 1  # Duration of trade (in ticks)
+contract_type = 'CALL'  # 'CALL' for Over, 'PUT' for Under
+
+# Connect to Deriv API
+api = DerivAPI(API_TOKEN)n
+
+async def get_balance():
+    """Retrieve the current balance of your account."""
+    response = await api.send({"balance": 1})
+    return response["balance"]["balance"]
+
+async def place_trade(bet_amount, contract_type):
+    """Place a trade on Deriv."""
+    contract = {
+        "amount": bet_amount,
+        "contract_type": contract_type,
+        "symbol": market,
+        "duration": duration,
+        "duration_unit": "t",  # 't' stands for ticks
+        "basis": "stake",  # We are using stake, not payout
+        "currency": "USD",
+    }
+    
+    response = await api.send({"buy": 1, **contract})
+    return response
+
+async def check_trade_result(contract_id):
+    """Check the result of the trade."""
+    while True:
+        response = await api.send({"proposal_open_contract": 1, "contract_id": contract_id})
+        if "is_sold" in response["proposal_open_contract"]:
+            return response["proposal_open_contract"]["profit"]
+
+async def martingale_trading():
+    """Implement Martingale strategy."""
+    balance = await get_balance()
+    print(f"Starting Balance: {balance} USD")
+    
+    current_bet = INITIAL_BET
+    loss_streak = 0
+    total_loss = 0
+    
+    while balance > 0:
+        # Place a trade
+        print(f"Placing bet of {current_bet} USD")
+        trade_response = await place_trade(current_bet, contract_type)
+        
+        # Get contract ID from response to monitor the trade result
+        contract_id = trade_response["buy"]["contract_id"]
+        
+        # Check if we won or lost
+        profit = await check_trade_result(contract_id)
+        
+        if profit > 0:
+            print(f"Win! Profit: {profit} USD")
+            current_bet = INITIAL_BET  # Reset bet after a win
+            loss_streak = 0
+        else:
+            print(f"Loss! Bet was: {current_bet} USD")
+            loss_streak += 1
+            current_bet *= martingale_factor  # Double the bet for Martingale
+            total_loss += current_bet
+        
+        # Update the balance
+        balance += profit
+        print(f"Updated Balance: {balance} USD")
+        
+        # Risk management: Stop if loss limit is reached
+        if total_loss >= MAX_LOSS_LIMIT:
+            print("Maximum loss limit reached. Stopping the bot.")
+            break
+
+        # Avoid too frequent trades by pausing
+        time.sleep(5)
+
+# Run the martingale trading bot
+asyncio.run(martingale_trading())
